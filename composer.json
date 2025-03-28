@@ -3,7 +3,7 @@
   "description": "Showcase your recent Bluesky posts on your WordPress® website in a variety of ways.",
   "license": "GPL-2.0-or-later",
   "type": "wordpress-plugin",
-  "version": "1.2.0",
+  "version": "dev-main",
   "author": [
     {
       "name": "Robert DeVore"
