@@ -6,6 +6,7 @@
 * [📦 NEW: Added scrollable widget option with customizable height](https://github.com/robertdevore/bluesky-feed-for-wordpress/commit/)
 * [📦 NEW: Added title and scrollable options to shortcode](https://github.com/robertdevore/bluesky-feed-for-wordpress/commit/)
 * [👌 IMPROVE: Enhanced widget styling for scrollable mode](https://github.com/robertdevore/bluesky-feed-for-wordpress/commit/)
+* [🐛 FIX: Fixed CSS issue with posts displaying horizontally in scrollable widget](https://github.com/robertdevore/bluesky-feed-for-wordpress/commit/)
 
 ## 1.1.1
 
