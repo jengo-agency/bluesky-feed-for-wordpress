@@ -6,8 +6,9 @@ Showcase your recent Bluesky posts on your WordPress® website in a variety of w
 
 ## Features
 
-- **Widget Integration**: Easily add your Bluesky feed to your website's sidebar or footer.
-- **Shortcode Support**: Place the feed anywhere on your site with `[bluesky_feed display="list|grid"]`.
+- **Widget Integration**: Easily add your Bluesky feed to your website's sidebar or footer with customizable title.
+- **Scrollable Widget**: Option to make the widget scrollable with a fixed height.
+- **Shortcode Support**: Place the feed anywhere on your site with `[bluesky_feed display="list|grid" title="My Bluesky Feed" scrollable="1"]`.
 - **Admin Preview**: See how your feed will look directly in the plugin settings page.
 - **Customizable Themes**: Choose from `light`, `dim`, or `dark` themes.
 - **Grid or List Layouts**: Choose between a list display or a grid layout with 3-4 posts per row.
@@ -37,7 +38,7 @@ Clone or download the plugin from the [GitHub repository](https://github.com/rob
 
 ### 1. **Widget**
 
-Add the **Bluesky Feed Widget** from the **Appearance > Widgets** section. Customize global settings in the plugin options.
+Add the **Bluesky Feed Widget** from the **Appearance > Widgets** section. You can set a custom title for the widget and other settings are configured in the plugin options.
 
 ### 2. **Shortcode**
 
@@ -45,11 +46,29 @@ Use the `[bluesky_feed]` shortcode in any post or page.
 Available attributes:
 
 - `display`: Choose between `list` (default) or `grid`.
+- `post_count`: Control how many posts shall be displayed. If not provided the number from the app settings will be used.
+- `title`: Add a custom title to your feed display.
+- `scrollable`: Set to `1` to make the feed scrollable with a fixed height (uses the height from settings).
 
 Example:
  
 ```
-[bluesky_feed display="grid"]
+[bluesky_feed display="grid" post_count="10" title="My Bluesky Posts" scrollable="1"]
+```
+
+If you want to load the dependencies outside of a widget or a content shortcode (eg. `echo do_shortcode("[bluesky_feed display='grid']")`) set the global variable `$loadBlueSkyApp` to true.
+
+Example:
+
+
+```
+function loadBlueSkyApp() {
+    if(is_front_page()) {
+        global $loadBlueSkyApp;
+        $loadBlueSkyApp = true;
+    }
+}
+add_action( 'wp', 'loadBlueSkyApp' );
 ```
 
 ### 3. **Admin Preview**

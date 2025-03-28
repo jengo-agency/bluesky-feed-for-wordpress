@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The plugin bootstrap file
  *
@@ -11,7 +12,7 @@
  * Plugin Name: Bluesky Feed for WordPress®
  * Description: Showcase your latest Bluesky posts on your WordPress® site with customizable display options and seamless integration
  * Plugin URI:  https://github.com/robertdevore/bluesky-feed-for-wordpress/
- * Version:     1.1.1
+ * Version:     1.2.0
  * Author:      Robert DeVore
  * Author URI:  https://robertdevore.com/
  * License:     GPL-2.0+
@@ -22,11 +23,12 @@
  */
 
 // If this file is called directly, abort.
-if ( ! defined( 'WPINC' ) ) {
+if (! defined('WPINC')) {
     die;
 }
 
 require 'vendor/plugin-update-checker/plugin-update-checker.php';
+
 use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
 $myUpdateChecker = PucFactory::buildUpdateChecker(
@@ -36,20 +38,20 @@ $myUpdateChecker = PucFactory::buildUpdateChecker(
 );
 
 // Set the branch that contains the stable release.
-$myUpdateChecker->setBranch( 'main' );
+$myUpdateChecker->setBranch('main');
 
 // Set the version number.
-define( 'BLUESKY_FEED_VERSION', '1.1.1' );
-define( 'BLUESKY_FEED_PLUGIN_PATH', __FILE__ );
+define('BLUESKY_FEED_VERSION', '1.2.0');
+define('BLUESKY_FEED_PLUGIN_PATH', __FILE__);
 
 // Check if Composer's autoloader is already registered globally.
-if ( ! class_exists( 'RobertDevore\WPComCheck\WPComPluginHandler' ) ) {
+if (! class_exists('RobertDevore\WPComCheck\WPComPluginHandler')) {
     require_once __DIR__ . '/vendor/autoload.php';
 }
 
 use RobertDevore\WPComCheck\WPComPluginHandler;
 
-new WPComPluginHandler( plugin_basename( __FILE__ ), 'https://robertdevore.com/why-this-plugin-doesnt-support-wordpress-com-hosting/' );
+new WPComPluginHandler(plugin_basename(__FILE__), 'https://robertdevore.com/why-this-plugin-doesnt-support-wordpress-com-hosting/');
 
 // Load the required classes.
 require 'classes/Bluesky_Feed.php';
@@ -57,18 +59,18 @@ require 'classes/Bluesky_Widget.php';
 
 /**
  * Load plugin text domain for translations
- * 
+ *
  * @since  1.1.0
  * @return void
  */
 function bluesky_feed_load_textdomain() {
-    load_plugin_textdomain( 
+    load_plugin_textdomain(
         'bluesky-feed',
         false,
-        dirname( plugin_basename( __FILE__ ) ) . '/languages/'
+        dirname(plugin_basename(__FILE__)) . '/languages/'
     );
 }
-add_action( 'plugins_loaded', 'bluesky_feed_load_textdomain' );
+add_action('plugins_loaded', 'bluesky_feed_load_textdomain');
 
 /**
  * Initialize the main class.
@@ -82,23 +84,26 @@ new Bluesky_Feed();
  * @return void
  */
 function bluesky_register_widget() {
-    register_widget( 'Bluesky_Widget' );
+    register_widget('Bluesky_Widget');
 }
-add_action( 'widgets_init', 'bluesky_register_widget' );
+add_action('widgets_init', 'bluesky_register_widget');
 
 /**
  * Shortcode to display Bluesky feed.
  *
  * @param array $atts Shortcode attributes.
- * 
+ *
  * @since  1.0.0
  * @return string Rendered HTML for the feed.
  */
-function bluesky_feed_shortcode( $atts ) {
+function bluesky_feed_shortcode($atts) {
     // Parse shortcode attributes with defaults.
     $atts = shortcode_atts(
         [
             'display' => 'list',
+            'post_count' => 0,
+            'title' => '',
+            'scrollable' => null
         ],
         $atts,
         'bluesky_feed'
@@ -106,24 +111,42 @@ function bluesky_feed_shortcode( $atts ) {
 
     // Get plugin settings.
     $settings = [
-        'username'    => esc_attr( get_option( 'bluesky_username', '' ) ),
-        'postCount'   => absint( get_option( 'bluesky_post_count', 5 ) ),
-        'includePins' => absint( get_option( 'bluesky_include_pins', 1 ) ),
-        'includeLink' => absint( get_option( 'bluesky_include_link', 1 ) ),
-        'theme'       => esc_attr( get_option( 'bluesky_theme', 'light' ) ),
+        'username'        => esc_attr(get_option('bluesky_username', '')),
+        'postCount'       => $atts['post_count'] ?: absint(get_option('bluesky_post_count', 5)),
+        'includePins'     => absint(get_option('bluesky_include_pins', 1)),
+        'includeLink'     => absint(get_option('bluesky_include_link', 1)),
+        'theme'           => esc_attr(get_option('bluesky_theme', 'light')),
+        'scrollableWidget' => $atts['scrollable'] !== null ? absint($atts['scrollable']) : absint(get_option('bluesky_scrollable_widget', 0)),
+        'scrollableHeight' => absint(get_option('bluesky_scrollable_height', 400)),
     ];
 
     // Prepare data attributes for JavaScript.
-    $dataAttributes = esc_attr( json_encode( $settings ) );
+    $dataAttributes = esc_attr(json_encode($settings));
 
     // Wrapper class for grid or list.
     $wrapperClass = $atts['display'] === 'grid' ? 'bluesky-feed-grid' : 'bluesky-feed-list';
-
-    // Output the feed container.
-    return sprintf(
-        '<div class="bluesky-feed-widget %s" data-settings="%s"></div>',
+    
+    // Add scrollable class if enabled
+    $scrollableClass = $settings['scrollableWidget'] ? ' scrollable' : '';
+    $scrollableStyle = $settings['scrollableWidget'] ? sprintf(' style="height: %dpx; overflow-y: auto;"', $settings['scrollableHeight']) : '';
+    
+    // Build output
+    $output = '';
+    
+    // Add title if provided
+    if (!empty($atts['title'])) {
+        $output .= '<h3 class="bluesky-feed-title">' . esc_html($atts['title']) . '</h3>';
+    }
+    
+    // Add feed container
+    $output .= sprintf(
+        '<div class="bluesky-feed-widget %s%s"%s data-settings="%s"></div>',
         $wrapperClass,
+        $scrollableClass,
+        $scrollableStyle,
         $dataAttributes
     );
+    
+    return $output;
 }
-add_shortcode( 'bluesky_feed', 'bluesky_feed_shortcode' );
+add_shortcode('bluesky_feed', 'bluesky_feed_shortcode');

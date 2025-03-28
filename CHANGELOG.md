@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 1.2.0
+
+* [📦 NEW: Added editable title to the widget](https://github.com/robertdevore/bluesky-feed-for-wordpress/commit/)
+* [📦 NEW: Added scrollable widget option with customizable height](https://github.com/robertdevore/bluesky-feed-for-wordpress/commit/)
+* [📦 NEW: Added title and scrollable options to shortcode](https://github.com/robertdevore/bluesky-feed-for-wordpress/commit/)
+* [👌 IMPROVE: Enhanced widget styling for scrollable mode](https://github.com/robertdevore/bluesky-feed-for-wordpress/commit/)
+
 ## 1.1.1
 
 * [📦 NEW: Added Afrikaans translation](https://github.com/robertdevore/bluesky-feed-for-wordpress/commit/0cc5ecc84b533be8a87fe088f8f86ed121e16ac6)

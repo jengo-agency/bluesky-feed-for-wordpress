@@ -18,6 +18,54 @@
     box-shadow: none;
 }
 
+/* Scrollable widget styles */
+.bluesky-feed-widget.scrollable {
+    overflow-y: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 10px;
+    scrollbar-width: thin;
+}
+
+.bluesky-feed-widget.scrollable::-webkit-scrollbar {
+    width: 6px;
+}
+
+.bluesky-feed-widget.scrollable::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.bluesky-feed-widget.scrollable::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.bluesky-feed-widget.scrollable::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Dark theme scrollbar styles */
+.theme-dim .bluesky-feed-widget.scrollable,
+.theme-dark .bluesky-feed-widget.scrollable {
+    border-color: #333f4b;
+}
+
+.theme-dim .bluesky-feed-widget.scrollable::-webkit-scrollbar-track,
+.theme-dark .bluesky-feed-widget.scrollable::-webkit-scrollbar-track {
+    background: #1c1c1c;
+}
+
+.theme-dim .bluesky-feed-widget.scrollable::-webkit-scrollbar-thumb,
+.theme-dark .bluesky-feed-widget.scrollable::-webkit-scrollbar-thumb {
+    background: #555;
+}
+
+.theme-dim .bluesky-feed-widget.scrollable::-webkit-scrollbar-thumb:hover,
+.theme-dark .bluesky-feed-widget.scrollable::-webkit-scrollbar-thumb:hover {
+    background: #777;
+}
+
 #bluesky-feed-preview .bg-white,
 .bluesky-feed-widget .bg-white {
     background-color: #ffffff;

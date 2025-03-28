@@ -1,5 +1,18 @@
 {
-    "require": {
-        "robertdevore/wpcom-check": "^1.0"
+  "name": "robertdevore/bluesky-feed-for-wordpress",
+  "description": "Showcase your recent Bluesky posts on your WordPress® website in a variety of ways.",
+  "license": "GPL-2.0-or-later",
+  "type": "wordpress-plugin",
+  "version": "1.2.0",
+  "author": [
+    {
+      "name": "Robert DeVore"
+    },
+    {
+        "name":"Arnaud Lapiere"
     }
+  ],
+  "require": {
+    "robertdevore/wpcom-check": "^1.0"
+  }
 }

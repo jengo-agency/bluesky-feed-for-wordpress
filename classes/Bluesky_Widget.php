@@ -42,19 +42,37 @@ class Bluesky_Widget extends WP_Widget {
      * @return void
      */
     public function widget( $args, $instance ) {
+        // Get title from widget instance or use default
+        $title = ! empty( $instance['title'] ) ? $instance['title'] : '';
+        $title = apply_filters( 'widget_title', $title, $instance, $this->id_base );
+        
         // Get settings from plugin options.
         $settings = [
-            'username'    => esc_attr( get_option( 'bluesky_username', '' ) ),
-            'postCount'   => absint( get_option( 'bluesky_post_count', 5 ) ),
-            'includePins' => absint( get_option( 'bluesky_include_pins', 1 ) ),
-            'includeLink' => absint( get_option( 'bluesky_include_link', 1 ) ),
-            'theme'       => esc_attr( get_option( 'bluesky_theme', 'light' ) ),
+            'username'        => esc_attr( get_option( 'bluesky_username', '' ) ),
+            'postCount'       => absint( get_option( 'bluesky_post_count', 5 ) ),
+            'includePins'     => absint( get_option( 'bluesky_include_pins', 1 ) ),
+            'includeLink'     => absint( get_option( 'bluesky_include_link', 1 ) ),
+            'theme'           => esc_attr( get_option( 'bluesky_theme', 'light' ) ),
+            'scrollableWidget' => absint( get_option( 'bluesky_scrollable_widget', 0 ) ),
+            'scrollableHeight' => absint( get_option( 'bluesky_scrollable_height', 400 ) ),
         ];
+
+        // Determine if widget should be scrollable
+        $scrollable_class = $settings['scrollableWidget'] ? ' scrollable' : '';
+        $scrollable_style = $settings['scrollableWidget'] ? sprintf( ' style="height: %dpx; overflow-y: auto;"', $settings['scrollableHeight'] ) : '';
 
         // Output widget content.
         echo $args['before_widget'];
+        
+        // Display the title if it's set
+        if ( ! empty( $title ) ) {
+            echo $args['before_title'] . esc_html( $title ) . $args['after_title'];
+        }
+        
         echo sprintf(
-            '<div class="bluesky-feed-widget" data-settings="%s"></div>',
+            '<div class="bluesky-feed-widget%s"%s data-settings="%s"></div>',
+            esc_attr( $scrollable_class ),
+            $scrollable_style,
             esc_attr( wp_json_encode( $settings ) )
         );
         echo $args['after_widget'];
@@ -69,7 +87,14 @@ class Bluesky_Widget extends WP_Widget {
      * @return void
      */
     public function form( $instance ) {
-        echo '<p>' . esc_html__( 'This widget uses global settings. Update settings in the plugin options page.', 'bluesky-feed' ) . '</p>';
+        $title = ! empty( $instance['title'] ) ? $instance['title'] : '';
+        ?>
+        <p>
+            <label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( 'Title:', 'bluesky-feed' ); ?></label>
+            <input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>">
+        </p>
+        <p><?php esc_html_e( 'Other settings can be configured in the plugin options page.', 'bluesky-feed' ); ?></p>
+        <?php
     }
 
     /**
@@ -82,7 +107,9 @@ class Bluesky_Widget extends WP_Widget {
      * @return array Updated settings.
      */
     public function update( $new_instance, $old_instance ) {
-        // Return sanitized new settings.
-        return $new_instance;
+        $instance = [];
+        $instance['title'] = ! empty( $new_instance['title'] ) ? sanitize_text_field( $new_instance['title'] ) : '';
+        
+        return $instance;
     }
 }
